@@ -15,3 +15,6 @@ clean:
 
 report: report.Rmd
 	Rscript -e "rmarkdown::render('report.Rmd',output_format='pdf_document',output_file='output/report.pdf')"
+
+derive: data/wm.sav code/LHS000301.R
+	Rscript code/LHS000301.R
