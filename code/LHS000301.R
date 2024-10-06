@@ -35,10 +35,10 @@ this_file <- function() {
 
 setwd(dirname(this_file()))
 
-### Loading data
+### Load data
 women_hon <- read_sav("../data/wm.sav") 
 
-### Extracting the labels
+### Extract the labels from the original dataset
 variable_labels_wm <- lapply(women_hon, function(x) attr(x, "label"))
 db_labels_wm <- data.frame(variable = names(variable_labels_wm), 
                            label = unlist(paste(variable_labels_wm,1:597) ), 
@@ -46,7 +46,7 @@ db_labels_wm <- data.frame(variable = names(variable_labels_wm),
 db_labels_wm %>% View()
 
 
-### Deriving variables in the output dataset
+### Derive variables in the output dataset
 LHS000301 <- women_hon %>% mutate(
   BMI = case_when(WW8 == 999.8 | WW7 == 999.8 ~ NA,   
                   is.na(WW7) | is.na(WW8) ~ NA,
@@ -82,7 +82,7 @@ LHS000301 <- women_hon %>% mutate(
   select(PSU,stratum, wmweight, BMI,OVERWEIGHT,WOMEN_AGE_C4, WOMEN_AGE_C7,WOMEN_AGE_C6,DOMAIN,windex5, REGION,
          URBAN, WOMEN_EDUCATION_C4, WOMEN_EDUCATION_C3,MSTATUS,ethnicity)
 
-## Creating the labels
+## Create labels
 LHS000301$REGION <- factor(LHS000301$REGION, 
                            levels = 1:20, 
                            labels = c("ATLANTIDA", "COLON", "COMAYAGUA", "COPAN", 
