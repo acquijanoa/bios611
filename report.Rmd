@@ -1,0 +1,11 @@
+---
+title: "Final Project"
+author: "Alvaro Quijano"
+date: "2024-10-05"
+output: pdf_document
+---
+
+
+## This is a test
+
+This report is a test. No dependencies are required so far
