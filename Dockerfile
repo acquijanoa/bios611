@@ -2,7 +2,7 @@
 FROM rocker/verse:latest
 
 # Installing CRAN packages
-# RUN Rscript -e "install.packages(c(''), dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN Rscript -e "install.packages(c('haven'), dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
 ## Using port 8787
 EXPOSE 8787
