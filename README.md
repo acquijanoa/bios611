@@ -1,6 +1,7 @@
 Hi, this is my 611 Data Science Project. 
 
 **Author**: Álvaro Quijano
+
 **Department:** UNC Biostatistics
 
 **In MacOs**,
