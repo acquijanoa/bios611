@@ -6,9 +6,10 @@
 ## 
 ## Project: Women obesity in Honduras 
 ##
-## Description: 
+## Description: Creates the derived dataset that 
+##              will be used of the analysis
 ##
-## Programmer: Álvaro Quijano
+## Programmer: Álvaro Quijano-Angarita
 ##
 ## Date: 09/24/2024
 ## 
@@ -17,36 +18,39 @@
 ## Uploading libraries
 library(tidyverse)
 library(haven)
+library(rtf)
 
-# Get the directory of the source file
+# Function to get the directory of the source file
 this_file <- function() {
   cmdArgs <- commandArgs(trailingOnly = FALSE)
   match <- grep("--file=", cmdArgs)
+  
   if (length(match) > 0) {
     # When running with Rscript or other command line interface
     normalizePath(sub("--file=", "", cmdArgs[match]))
-  } else if (!is.null(sys.frame(1))) {
+  } else if (!is.null(sys.frames()[[1]]$ofile)) {
     # When running interactively (e.g., using source())
-    normalizePath(sys.frame(1)$ofile)
+    normalizePath(sys.frames()[[1]]$ofile)
   } else {
-    stop("Cannot determine source file location.")
+    stop("Cannot determine the source file location.")
   }
 }
 
-setwd(dirname(this_file()))
+### Code to define the working directory in case we are in console or in the rstudio
+if (interactive()) {
+  library(rstudioapi)
+  setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+} else {
+  setwd(dirname(this_file()))
+}
+# Setting the working directory to the location of the files
 
 ### Load data
-women_hon <- read_sav("../data/wm.sav") 
-
-### Extract the labels from the original dataset
-variable_labels_wm <- lapply(women_hon, function(x) attr(x, "label"))
-db_labels_wm <- data.frame(variable = names(variable_labels_wm), 
-                           label = unlist(paste(variable_labels_wm,1:597) ), 
-                           stringsAsFactors = FALSE)
-db_labels_wm %>% View()
+women_hon <- read_sav("../data/wm.sav") %>%
+  mutate(across(where(is.character), ~ na_if(., "")))
 
 
-### Derive variables in the output dataset
+### Derive variables in the working project dataset
 LHS000301 <- women_hon %>% mutate(
   BMI = case_when(WW8 == 999.8 | WW7 == 999.8 ~ NA,   
                   is.na(WW7) | is.na(WW8) ~ NA,
@@ -78,9 +82,12 @@ LHS000301 <- women_hon %>% mutate(
   URBAN = case_when(HH6 == 1 ~ 1,
                     HH6 == 2 ~ 0,
                     is.na(HH6) ~ NA),
+  LITERACY_C2 = case_when(WB14 %in% c(1,2,4) ~ 1,
+                        WB14 == 3 ~ 0,
+                        TRUE ~ 9),
   DOMAIN = ifelse(is.na(BMI) + is.na(WOMEN_AGE_C7) == 0 & CP1 ==2 ,1,0)) %>% 
   select(PSU,stratum, wmweight, BMI,OVERWEIGHT,WOMEN_AGE_C4, WOMEN_AGE_C7,WOMEN_AGE_C6,DOMAIN,windex5, REGION,
-         URBAN, WOMEN_EDUCATION_C4, WOMEN_EDUCATION_C3,MSTATUS,ethnicity)
+         URBAN, WOMEN_EDUCATION_C4, WOMEN_EDUCATION_C3,MSTATUS,LITERACY_C2,ethnicity)
 
 ## Create labels
 LHS000301$REGION <- factor(LHS000301$REGION, 
@@ -91,17 +98,37 @@ LHS000301$REGION <- factor(LHS000301$REGION,
                                       "ISLAS DE LA BAHIA", "LA PAZ", "LEMPIRA", 
                                       "OCOTEPEQUE", "OLANCHO", "SANTA BARBARA", 
                                       "VALLE", "YORO", "SAN PEDRO SULA", "DISTRITO CENTRAL"))
-LHS000301$URBAN <- factor(LHS000301$URBAN, levels = 0:1,labels=c("Rural","Urban"))
-LHS000301$WOMEN_EDUCATION_C4 <- factor(LHS000301$WOMEN_EDUCATION_C4, levels = 0:3,labels=c("No education",
-                                                                                           "Primary",
-                                                                                           "Secondary/Highschool",
-                                                                                           "Higher education"))
-LHS000301$WOMEN_EDUCATION_C3 <- factor(LHS000301$WOMEN_EDUCATION_C3, levels = 0:2,labels=c("No education/Primary",
-                                                                                           "Secondary/Highschool","Higher education"))
-LHS000301$windex5 <- factor(LHS000301$windex5, levels = 1:5,labels=c("Poorest","Poorer","Middle","Richer","Richest"))
+LHS000301$URBAN <- factor(LHS000301$URBAN, 
+                            levels = 0:1,
+                            labels=c("Rural","Urban"))
+
+LHS000301$WOMEN_EDUCATION_C4 <- factor(LHS000301$WOMEN_EDUCATION_C4, 
+                                       levels = 0:3,
+                                       labels=c("No education",
+                                                     "Primary",
+                                                     "Secondary/Highschool",
+                                                     "Higher education"))
+
+LHS000301$WOMEN_EDUCATION_C3 <- factor(LHS000301$WOMEN_EDUCATION_C3, 
+                                        levels = 0:2,
+                                        labels=c("No education/Primary",
+                                                  "Secondary/Highschool",
+                                                  "Higher education"))
+
+LHS000301$windex5 <- factor(LHS000301$windex5, 
+                              levels = 1:5,
+                              labels=c("Poorest",
+                                        "Poorer",
+                                        "Middle",
+                                        "Richer",
+                                        "Richest"))
+
+LHS000301$LITERACY_C2 <- factor(LHS000301$LITERACY_C2, 
+                                  levels =c(0,1,9), 
+                                  labels=c("Cannot read",
+                                           "Can read","Missing"))
 
 ### Saving the file in Rdata format
 save(LHS000301, file="../derived_data/LHS000301.Rdata")
 
-
-
+table(LHS000301$LITERACY_C2, LHS000301$WOMEN_EDUCATION_C3, useNA = "always")
