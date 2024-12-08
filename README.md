@@ -16,11 +16,13 @@ On macOS:
 1. Build the Docker container:  
    Use the following command to build the Docker container:
 
+```bash
    docker build --platform=linux/x86_64 -t shiny-sf-leaflet .
 
 2. Run the Docker container:  
    Use the command below to start the container:
 
+```bash
    docker run --rm  --platform linux/amd64  -p 3838:3838  -v "$(PWD):/home/rstudio/LHS0003" \
 	  shiny-sf-leaflet \	
 	  Rscript -e "shiny::runApp('/home/rstudio/LHS0003/code/LHS000398/app.R', port = 3838, 	host = '0.0.0.0')"
