@@ -1,14 +1,12 @@
 library(shiny)
-library(tidyverse)
+library(dplyr)
 library(survey)
 library(DT)
 library(sf)
 library(leaflet)
 
-# Function to get the directory of the source file
-
 # Load the data
-load('~/LHS0003/derived_data/LHS000301.Rdata')
+load('../../derived_data/LHS000301.Rdata')
 
 # Get the variables of interest
 vars <- c("URBAN",
@@ -38,6 +36,25 @@ LHS000301 = LHS000301 %>% rename(`WEALTH_INDEX`=windex5)
 
 # Perform PCA
 pca_result <- prcomp(X_pca)
+
+# Variance explained by each component
+variance <- pca_result$sdev^2
+total_variance <- sum(variance)
+
+# Proportion of variance explained
+explained_variance <- variance / total_variance
+print(explained_variance)
+
+# Cumulative variance explained
+cumulative_variance <- cumsum(explained_variance)
+print(cumulative_variance)
+
+# Create a data frame for visualization
+pca_summary <- data.frame(
+  Component = seq_along(explained_variance),
+  Variance = explained_variance,
+  CumulativeVariance = cumulative_variance
+)
 
 # Extract the first 9 PCs
 scores <- pca_result$x[, 1:9]
@@ -295,14 +312,8 @@ server <- function(input, output) {
   })
   
   output$cum_var <- renderDT({
-    pca.res = FactoMineR::PCA(X_pca, graph = FALSE)
-    tabl = pca.res$eig %>%  as_tibble() %>% head(10) %>% select(-eigenvalue) 
-    tabl$Component = 1:10
-    tabl %>%  
-      mutate(`percentage of variance` = round(`percentage of variance`,3),
-             `cumulative percentage of variance` = round(`cumulative percentage of variance`,3),
-             ) %>% 
-      select(Component,`percentage of variance`,`cumulative percentage of variance`)
+    
+    pca_summary
     
   })
   
@@ -341,7 +352,7 @@ server <- function(input, output) {
   
   #### Creating the maps
   ## Loading the shapefile
-  shp_mg = sf::read_sf(paste0("~/LHS0003","/data/shps/Shp_mgd.shp")) %>% 
+  shp_mg = sf::read_sf(paste0("../..","/data/shps/Shp_mgd.shp")) %>% 
     mutate(DHSREGEN = replace_tildes(DHSREGEN), DHSREGSP = replace_tildes(DHSREGSP) ) %>% 
     filter(CNTRYNAMEE == "Honduras")
   shp_mg$DHSREGEN = toupper(shp_mg$DHSREGEN)

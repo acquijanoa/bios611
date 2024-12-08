@@ -13,8 +13,6 @@ clean:
 	mkdir -p figures
 	mkdir -p output
 
-run_shiny: derived_data/LHS000301.Rdata code/LHS000398/app.R
-	Rscript -e "shiny::runApp('code/LHS000398/app.R')"
 
 report: output/prevalence_tables.png output/map_age.png output/map_urban.png output/map_wealth.png output/map_educ.png  code/report.Rmd
 	Rscript -e "rmarkdown::render('code/report.Rmd',output_format='pdf_document',output_file='../output/report.pdf')"
@@ -37,8 +35,12 @@ run_docker:
 build_docker:
 	@docker build --platform=linux/x86_64 -t bios611_rstudio .
 
+# Run the shiny container
 run_shiny_container:
-	@docker run --rm --platform linux/x86_64 -p 3838:3838 \
-	-v "$(current_dir):/home/rstudio/LHS0003" \
+	@docker run --rm \
+	--platform linux/amd64 \
+	-p 3838:3838 \
+	-v "$(PWD):/home/rstudio/LHS0003" \
 	shiny-sf-leaflet \
-	Rscript -e "shiny::runApp('code/LHS000398/app.R', port = 3838, host = '0.0.0.0')"
+	Rscript -e "shiny::runApp('/home/rstudio/LHS0003/code/LHS000398/app.R', port = 3838, host = '0.0.0.0')"
+

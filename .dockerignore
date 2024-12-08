@@ -1,1 +1,6 @@
 *
+
+# Allow specific files and directories
+!code/
+!code/LHS000398/
+!code/LHS000398/app.R
