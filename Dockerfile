@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install R packages
-RUN R -e "install.packages(c('sf', 'leaflet','tidyverse','haven','survey','FactoMineR'), repos='https://cloud.r-project.org/')"
+RUN R -e "install.packages(c('sf', 'leaflet','tidyverse','haven','survey'), repos='https://cloud.r-project.org/')"
 
 # Copy the Shiny app to the image
 COPY code/LHS000398 /srv/shiny-server/app

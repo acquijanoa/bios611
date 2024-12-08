@@ -28,15 +28,13 @@ output/map_age.png output/map_educ.png output/map_urban.png output/map_wealth.pn
 
 current_dir := $(shell pwd)
 
-run_docker:
-	@docker run --platform linux/x86_64 -d -p 8787:8787 -e PASSWORD=pass -v "$(current_dir):/home/rstudio/LHS0003" bios611_rstudio
 
 # Target to build the Docker image
 build_docker:
-	@docker build --platform=linux/x86_64 -t bios611_rstudio .
+	@docker build --platform=linux/x86_64 -t shiny-sf-leaflet .
 
 # Run the shiny container
-run_shiny_container:
+run_shiny_container: derived_data/LHS000301.Rdata
 	@docker run --rm \
 	--platform linux/amd64 \
 	-p 3838:3838 \

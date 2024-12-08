@@ -20,6 +20,11 @@ This project demonstrates the use of Docker, Shiny apps for data science workflo
    docker build --platform=linux/x86_64 -t shiny-sf-leaflet .
 ```
 
+or use the makefile
+```bash
+   make build_docker
+```
+
 **On Linux:**
 
    Use the following command to build the Docker container:
@@ -38,9 +43,6 @@ This project demonstrates the use of Docker, Shiny apps for data science workflo
 
 - **Clean and recreate directories:**
   make clean
-
-- **Run the Shiny app locally:**
-  make run_shiny
 
 - **Generate the report:**
   make report
