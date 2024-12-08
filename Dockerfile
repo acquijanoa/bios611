@@ -1,23 +1,24 @@
-# Using the RStudio Verse image
-FROM rocker/verse:latest
+# Base image for Shiny
+FROM rocker/shiny:latest
 
-# Install CRAN packages
-RUN Rscript -e "install.packages(c('haven','survey','shiny','sf','FactoMineR','leaflet'), dependencies=TRUE, repos='http://cran.rstudio.com')"
+# Install system dependencies for sf
 RUN apt-get update && apt-get install -y \
     libudunits2-dev \
     libgdal-dev \
-    libproj-dev \
     libgeos-dev \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    libxml2-dev \
-    && apt-get clean
+    libproj-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-# Expose ports for RStudio Server
-EXPOSE 8787
+# Install R packages
+RUN R -e "install.packages(c('sf', 'leaflet'), repos='https://cloud.r-project.org/')"
 
-# Create necessary directories
-RUN mkdir -p /home/rstudio/LHS0003
 
-# Set the RStudio Server with Supervisor
-CMD ["/init"]
+# Set permissions for the Shiny app
+RUN chmod -R 755 /srv/shiny-server/app
+
+# Expose the default Shiny port
+EXPOSE 3838
+
+# Run the Shiny server
+CMD ["/usr/bin/shiny-server"]
+

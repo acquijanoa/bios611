@@ -295,7 +295,7 @@ server <- function(input, output) {
   })
   
   output$cum_var <- renderDT({
-    pca.res = FactoMineR::PCA(X_pca, graph = FALSE)
+    pca.res = FactoMineR::PCA(X_pca)
     tabl = pca.res$eig %>%  as_tibble() %>% head(10) %>% select(-eigenvalue) 
     tabl$Component = 1:10
     tabl %>%  

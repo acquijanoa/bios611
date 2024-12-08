@@ -16,17 +16,17 @@ clean:
 run_shiny: derived_data/LHS000301.Rdata code/LHS000398/app.R
 	Rscript -e "shiny::runApp('code/LHS000398/app.R')"
 
-report: output/prevalence_tables.png code/report.Rmd
+report: output/prevalence_tables.png output/map_age.png output/map_urban.png output/map_wealth.png output/map_educ.png  code/report.Rmd
 	Rscript -e "rmarkdown::render('code/report.Rmd',output_format='pdf_document',output_file='../output/report.pdf')"
 
 derived_data/LHS000301.Rdata: data/wm.sav code/LHS000301.R
 	Rscript code/LHS000301.R
 
-report_missing: data/wm.sav code/LHS000302.R
-	Rscript code/LHS000302.R
-
 output/prevalence_tables.png: derived_data/LHS000301.Rdata code/LHS000303.R
 	Rscript code/LHS000303.R
+
+output/map_age.png output/map_educ.png output/map_urban.png output/map_wealth.png: derived_data/LHS000301.Rdata code/LHS000304.R
+	Rscript code/LHS000304.R
 
 current_dir := $(shell pwd)
 
@@ -37,3 +37,8 @@ run_docker:
 build_docker:
 	@docker build --platform=linux/x86_64 -t bios611_rstudio .
 
+run_shiny_container:
+	@docker run --rm --platform linux/x86_64 -p 3838:3838 \
+	-v "$(current_dir):/home/rstudio/LHS0003" \
+	shiny-sf-leaflet \
+	Rscript -e "shiny::runApp('code/LHS000398/app.R', port = 3838, host = '0.0.0.0')"
