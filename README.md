@@ -6,6 +6,7 @@
 This project demonstrates the use of Docker, Shiny apps for data science workflows. Below are instructions for setting up the project environment, building and running Docker containers, and running the shiny app (interactive report that contains images, and what I learned from this dataset).
 
 ![Example Visualization](data/img1.png)
+![Example Visualization](data/img2.png)
 
 ---
 
