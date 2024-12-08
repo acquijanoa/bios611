@@ -1,14 +1,23 @@
-# Using the Rstudio verse image
+# Using the RStudio Verse image
 FROM rocker/verse:latest
 
-# Installing CRAN packages
-RUN Rscript -e "install.packages(c('haven','survey','rtf'), dependencies=TRUE, repos='http://cran.rstudio.com/')"
+# Install CRAN packages
+RUN Rscript -e "install.packages(c('haven','survey','shiny','sf','FactoMineR','leaflet'), dependencies=TRUE, repos='http://cran.rstudio.com')"
+RUN apt-get update && apt-get install -y \
+    libudunits2-dev \
+    libgdal-dev \
+    libproj-dev \
+    libgeos-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    libxml2-dev \
+    && apt-get clean
 
-## Using port 8787
+# Expose ports for RStudio Server
 EXPOSE 8787
 
-## Creating the directory in the container 
-RUN mkdir -p home/rstudio/LHS000301
+# Create necessary directories
+RUN mkdir -p /home/rstudio/LHS0003
 
-# Setting the Rstudio server
+# Set the RStudio Server with Supervisor
 CMD ["/init"]

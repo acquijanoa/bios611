@@ -1,0 +1,35 @@
+---
+title: "Estimating prevalence of overweight and obesity in Honduras, using DHS data"
+author: "Álvaro Quijano Angarita"
+date: ""
+output: pdf_document
+---
+
+# Introduction
+
+The current report pertains to one of the projects in the UNC Latin American Health Studies (UNC LHS), a personal initiative that involves using readily available data from Latin American countries, processing the datasets, deriving variables of interest, and addressing specific research questions. In this case, the project corresponds to LHS0003, and its objective is to estimate the probability of overweight and obesity in Honduras using Demographic and Health Survey (DHS) data and to map these estimates in a spatial format.
+
+# Data and Methods
+
+The probability of overweight and obesity among women aged 12 to 49 years in Honduras was estimated using data from the Honduran Demographic and Health Survey (DHS, ENDESA in spanish) with a complex survey design. The data was modeled using the *survey* package in R, that accounts for the multi-stage sampling design,  specifically the primary sampling units (PSUs), stratification variable, and survey weights to ensure nationally representative estimates. To estimate probability rates, a logistic regression model with a logit link function was fitted using the *svyglm* function, which is specifically designed for complex survey data.  This approach incorporate the survey design in the estimates and provides robust variance estimates. The response variable was overweight/obesity, modeled as a function of  predictors such as women's age categories, wealth, education level, wealth index and others. This method leverages the flexibility of generalized linear models while appropriately handling the complexities of survey sampling, ensuring accurate and reliable prevalence estimates that account for the design's stratification, clustering, and weighting.
+
+## Project structure
+
+For estimating the 
+
+* LHS000301: Read the raw data and derived the needed variables in the project
+* LHS000302: Creates a report that shows the number of missing data per variable
+* LHS000303: Generate the univariate prevalences of overweight and obesity
+* LHS000304: 
+
+# Results 
+
+##  Estimating the univariate prevalences of overweight and obesity
+
+```{r include_image, echo=FALSE, out.width='80%', fig.align='center', fig.cap="Prevalence of age categories in the study."}
+knitr::include_graphics("../output/prevalence_tables.png")
+```
+
+The prevalence of overweight and obesity among women aged 12 to 49 in Honduras reveals significant disparities across regions, age groups, wealth status, areas of residence, and education levels. The highest prevalence is observed in the regions of Gracias A Dios (72.85%) and Islas De La Bahia (71.45%), while the lowest is in Lempira (40.22%), reflecting substantial regional variation. Overweight and obesity rates increase consistently with age, from 27.10% in women aged 15-20 to 82.40% in those aged 40-50. Urban areas (65.38%) show higher prevalence compared to rural areas (58.45%), likely due to differences in lifestyle and dietary patterns. Wealthier groups have higher prevalence rates, peaking at 66.02% among richer individuals, though the trend stabilizes among the richest. Women with no or primary education (67.03%) are most affected, while those with secondary or high school education show a lower prevalence (55.31%). These findings highlight the need for targeted interventions, particularly among younger women, rural populations, and those with lower education levels, to address the growing public health concern of obesity and overweight in Honduras.
+
+

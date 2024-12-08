@@ -47,7 +47,9 @@ load("../derived_data/LHS000301.Rdata")
 library(haven)
 library(dplyr)
 library(survey)
-library(rtf)
+library(gridExtra)
+library(ggplot2)
+
 
 ## We create the design
 hond_design = survey::svydesign(ids=~PSU, 
@@ -69,6 +71,7 @@ age.db <- data.frame(`Variable`= "Women's Age", `Level`=gsub(x = names(exp(coeff
                                     pattern = "WOMEN_AGE_C4",
                                     replacement = "") ,
               `Prevalence`=round(exp(coefficients(mod_age)),4))
+table_grob_age <- tableGrob(age.db, rows = NULL) # saving the table for age as Grob
 
 ### overweight/obesity ~  wealth
 mod_wealth <-  svyglm(formula = OVERWEIGHT ~ -1 + windex5 , design = hond_design_sub, 
@@ -77,6 +80,8 @@ wealth.db <- data.frame(`Variable`="Wealth status", `Level`=gsub(x =names(exp(co
                                                                     pattern = "windex5",
                                                                     replacement = ""),
                      `Prevalence`= round(exp(coefficients(mod_wealth)),4))
+table_grob_wealth <- tableGrob(wealth.db, rows = NULL) # saving the table for age as Grob
+
 ### overweight/obesity ~  urban
 mod_urban <-  svyglm(formula = OVERWEIGHT ~ -1 + URBAN, design = hond_design_sub,
                    family = quasibinomial(link="log")); summary(mod_urban)
@@ -84,6 +89,7 @@ urban.db <- data.frame(`Variable`="Area",`Level`=  gsub(x =names(exp(coefficient
                                                              pattern="URBAN",
                                                              replacement = ""),
                        `Prevalence`= round(exp(coefficients(mod_urban)),4))
+table_grob_urban <- tableGrob(urban.db, rows = NULL) # saving the table for age as Grob
 
 ### overweight/obesity ~  region
 mod_region <-  svyglm(formula = OVERWEIGHT ~-1 + REGION, design = hond_design_sub, 
@@ -92,6 +98,7 @@ region.db <- data.frame(`Variable`="Region",`Level`= stringr::str_to_title(gsub(
                                         pattern = "REGION",
                                         replacement = "")),
                        `Prevalence`= round(exp(coefficients(mod_region)),4))
+table_grob_region <- tableGrob(region.db, rows = NULL) # saving the table for age as Grob
 
 ### overweight/obesity ~  women education 
 mod_education <- svyglm(formula = OVERWEIGHT ~ -1 + WOMEN_EDUCATION_C3, design = hond_design_sub, 
@@ -100,28 +107,23 @@ education.db <- data.frame(`Variable`="Education",`Level`= gsub(x =names(exp(coe
                                             pattern="WOMEN_EDUCATION_C3",
                                             replacement = ""),
                            `Prevalence`= round(exp(coefficients(mod_education)),4))
+table_grob_education <- tableGrob(education.db, rows = NULL) # saving the table for age as Grob
+
+### Editing the tables to set them to the same width
+max_widths <- unit.pmax(table_grob_age$widths, table_grob_wealth$widths,table_grob_urban$widths,table_grob_education$widths)
+table_grob_age$widths <- max_widths
+table_grob_wealth$widths <- max_widths
+table_grob_urban$widths <- max_widths
+table_grob_education$widths <- max_widths
+
+## Combining the tables
+combined1 <- grid.arrange(table_grob_age, table_grob_wealth, table_grob_urban, table_grob_education, nrow = 4, ncol=1,  
+                         heights = unit.c(unit(1.5, "in"), unit(1.7, "in"), unit(1.3, "in"), unit(1, "in")))
+combined <- grid.arrange(table_grob_region, combined1,  ncol = 2) 
+ggsave("../output/prevalence_tables.png", plot = combined , device = "png", width = 9, height = 6)
 
 
-### Write the RTF file
-rtf_file <- RTF(paste0("../output/prevalences_",format(Sys.Date(), "%b%y"),".rtf"))
-
-# Add the dataframe as a table
-addHeader(rtf_file, "Women's overweight and obesity prevalences")
-addNewLine(rtf_file, 1)
-addTable(rtf_file, age.db)
-addNewLine(rtf_file, 1)
-addTable(rtf_file, wealth.db)
-addNewLine(rtf_file, 1)
-addTable(rtf_file, urban.db)
-addNewLine(rtf_file, 1)
-addTable(rtf_file, region.db)
-addNewLine(rtf_file, 1)
-addTable(rtf_file, education.db)
-addNewLine(rtf_file, 1)
-done(rtf_file)
-
-
-###-------------------------------------------------------------------------------
+ ###-------------------------------------------------------------------------------
 ###  Estimates predicted risk of overwight/obesity by REGION and wealth status
 ###-------------------------------------------------------------------------------
 ## mod_region_windex = svyglm(formula = OVERWEIGHT ~ factor(REGION) +  

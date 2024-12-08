@@ -18,7 +18,6 @@
 ## Uploading libraries
 library(tidyverse)
 library(haven)
-library(rtf)
 
 # Function to get the directory of the source file
 this_file <- function() {
@@ -58,13 +57,16 @@ LHS000301 <- women_hon %>% mutate(
   OVERWEIGHT = case_when(is.na(BMI) ~ NA,
                          BMI >=25  ~ 1,
                          BMI < 25 ~ 0), 
-  WOMEN_AGE_C4 = cut(WB4, breaks = c(15,seq(20,50,by=10)), 
+  WOMEN_AGE_C4 = cut(WB4, 
+                     breaks = c(15,seq(20,50,by=10)), 
                      right = F, 
                      include.lowest = T),
-  WOMEN_AGE_C7 = cut(WB4, breaks = seq(15,50,by=5), 
+  WOMEN_AGE_C7 = cut(WB4, 
+                     breaks = seq(15,50,by=5), 
                      right = F, 
                      include.lowest = T),
-  WOMEN_AGE_C6 = cut(WB4, breaks = c(seq(15,40,by=5),50), 
+  WOMEN_AGE_C6 = cut(WB4, 
+                     breaks = c(seq(15,40,by=5),50), 
                      right = F, 
                      include.lowest = T),
   REGION = HH7,
@@ -87,7 +89,7 @@ LHS000301 <- women_hon %>% mutate(
                         TRUE ~ 9),
   DOMAIN = ifelse(is.na(BMI) + is.na(WOMEN_AGE_C7) == 0 & CP1 ==2 ,1,0)) %>% 
   select(PSU,stratum, wmweight, BMI,OVERWEIGHT,WOMEN_AGE_C4, WOMEN_AGE_C7,WOMEN_AGE_C6,DOMAIN,windex5, REGION,
-         URBAN, WOMEN_EDUCATION_C4, WOMEN_EDUCATION_C3,MSTATUS,LITERACY_C2,ethnicity)
+         URBAN, WOMEN_EDUCATION_C4, WOMEN_EDUCATION_C3,MSTATUS,LITERACY_C2,ethnicity,VT22A,VT22B,VT22C,VT22D,VT22E,VT22F,VT22X)
 
 ## Create labels
 LHS000301$REGION <- factor(LHS000301$REGION, 
@@ -131,4 +133,3 @@ LHS000301$LITERACY_C2 <- factor(LHS000301$LITERACY_C2,
 ### Saving the file in Rdata format
 save(LHS000301, file="../derived_data/LHS000301.Rdata")
 
-table(LHS000301$LITERACY_C2, LHS000301$WOMEN_EDUCATION_C3, useNA = "always")

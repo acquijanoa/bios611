@@ -13,22 +13,25 @@ clean:
 	mkdir -p figures
 	mkdir -p output
 
-report: report.Rmd
-	Rscript -e "rmarkdown::render('report.Rmd',output_format='pdf_document',output_file='output/report.pdf')"
+run_shiny: derived_data/LHS000301.Rdata code/LHS000398/app.R
+	Rscript -e "shiny::runApp('code/LHS000398/app.R')"
 
-derive: data/wm.sav code/LHS000301.R
+report: output/prevalence_tables.png code/report.Rmd
+	Rscript -e "rmarkdown::render('code/report.Rmd',output_format='pdf_document',output_file='../output/report.pdf')"
+
+derived_data/LHS000301.Rdata: data/wm.sav code/LHS000301.R
 	Rscript code/LHS000301.R
 
 report_missing: data/wm.sav code/LHS000302.R
 	Rscript code/LHS000302.R
 
-prevalence: derived_data/LHS000301.Rdata code/LHS000302.R
-	Rscript code/LHS000302.R
+output/prevalence_tables.png: derived_data/LHS000301.Rdata code/LHS000303.R
+	Rscript code/LHS000303.R
 
 current_dir := $(shell pwd)
 
 run_docker:
-	@docker run --platform linux/x86_64 -d -p 8787:8787 -e PASSWORD=pass -v "$(current_dir):/home/rstudio/BIOS611_docker" bios611_rstudio
+	@docker run --platform linux/x86_64 -d -p 8787:8787 -e PASSWORD=pass -v "$(current_dir):/home/rstudio/LHS0003" bios611_rstudio
 
 # Target to build the Docker image
 build_docker:
