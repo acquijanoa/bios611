@@ -43,11 +43,9 @@ total_variance <- sum(variance)
 
 # Proportion of variance explained
 explained_variance <- variance / total_variance
-print(explained_variance)
 
 # Cumulative variance explained
 cumulative_variance <- cumsum(explained_variance)
-print(cumulative_variance)
 
 # Create a data frame for visualization
 pca_summary <- data.frame(
