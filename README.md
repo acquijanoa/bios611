@@ -9,9 +9,9 @@ This project demonstrates the use of Docker, Shiny apps for data science workflo
 
 ---
 
-Setting Up the Project
+**Setting Up the Project**
 
-On macOS:
+**On macOS:**
 
 1. Build the Docker container:  
    Use the following command to build the Docker container:
@@ -20,42 +20,44 @@ On macOS:
    docker build --platform=linux/x86_64 -t shiny-sf-leaflet .
 ```
 
+**On Linux:**
+
+   Use the following command to build the Docker container:
+
+```bash
+   docker build -t shiny-sf-leaflet .
+```
+
 ---
 
-Project Structure
 
-Directories:
-- derived_data/ – Contains processed datasets.
-- figures/ – Stores generated plots and visualizations.
-- output/ – Contains reports and final outputs.
+**Makefile Tasks:**
 
-Makefile Tasks:
-
-- Initialize directories:
+- **Initialize directories:**
   make init
 
-- Clean and recreate directories:
+- **Clean and recreate directories:**
   make clean
 
-- Run the Shiny app locally:
+- **Run the Shiny app locally:**
   make run_shiny
 
-- Generate the report:
+- **Generate the report:**
   make report
 
-- Build the Docker image:
+- **Build the Docker image:**
   make build_docker
 
-- Run the Shiny app in a Docker container:
+- **Run the Shiny app in a Docker container:**
   make run_shiny_container
 
 ---
 
-Shiny Application Deployment
+**Shiny Application Deployment**
 
 This project includes a Shiny app implementation that utilizes a custom Docker image called shiny-sf-leaflet. This image is configured to handle spatial data visualization with Shiny, sf, and leaflet.
 
-Run the Shiny app inside a container:
+**Run the Shiny app inside a container:**
 
 ```bash
 docker run --rm \
@@ -72,11 +74,11 @@ or use the makefile as follows:
 make run_shiny_container
 ```
 
-Access the Shiny app:
+**Access the Shiny app:**
 After running the above command, the Shiny app will be accessible at:
 http://localhost:3838
 
 
-Acknowledgments
+**Acknowledgments**
 
 This project is part of the BIOS 611 Data Science curriculum at UNC Biostatistics. 
