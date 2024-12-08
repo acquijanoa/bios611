@@ -1,7 +1,7 @@
-BIOS 611 Data Science Project
+**BIOS 611 Data Science Project**
 
-Author: Álvaro Quijano  
-Department: UNC Biostatistics  
+**Author**: Álvaro Quijano  
+**Department**: UNC Biostatistics  
 
 This project demonstrates the use of Docker, Shiny apps for data science workflows. Below are instructions for setting up the project environment, building and running Docker containers, and executing key project tasks.
 
@@ -15,11 +15,15 @@ On macOS:
 
 1. Build the Docker container:  
    Use the following command to build the Docker container:
-   docker build --platform=linux/x86_64 -t bios611_rstudio .
+
+   docker build --platform=linux/x86_64 -t shiny-sf-leaflet .
 
 2. Run the Docker container:  
    Use the command below to start the container:
-   docker run --platform linux/x86_64 -d -p 8787:8787 -e PASSWORD=pass -v "$(pwd)":/home/rstudio/BIOS611_docker bios611_rstudio
+
+   docker run --rm  --platform linux/amd64  -p 3838:3838  -v "$(PWD):/home/rstudio/LHS0003" \
+	  shiny-sf-leaflet \	
+	  Rscript -e "shiny::runApp('/home/rstudio/LHS0003/code/LHS000398/app.R', port = 3838, 	host = '0.0.0.0')"
 
 ---
 
